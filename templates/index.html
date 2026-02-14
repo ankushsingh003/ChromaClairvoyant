@@ -30,7 +30,7 @@
 
         <main>
             <div class="upload-zone" id="uploadZone">
-                <input type="file" id="fileInput" accept="image/*" hidden>
+                <input type="file" id="fileInput" accept="image/*" class="visually-hidden">
                 <div class="upload-content" id="uploadContent">
                     <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
@@ -39,8 +39,7 @@
                         </path>
                     </svg>
                     <p>Drag & Drop your image here</p>
-                    <button class="btn-primary" onclick="document.getElementById('fileInput').click()">Browse
-                        Files</button>
+                    <button class="btn-primary" id="browseBtn">Browse Files</button>
                 </div>
                 <div class="preview-container hidden" id="previewContainer">
                     <img id="imagePreview" src="" alt="Preview">
