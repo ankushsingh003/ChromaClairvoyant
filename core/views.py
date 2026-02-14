@@ -20,53 +20,61 @@ TRANSFORM = None
 def load_model_resources():
     global MODEL, VOCAB, DEVICE, TRANSFORM
     if MODEL is None:
-        print("Loading model and vocabulary...")
-        
-        # Define transform
-        TRANSFORM = transforms.Compose(
-            [
-                transforms.Resize((299, 299)),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            ]
-        )
-        
-        # Load dataset to get vocab
-        # Ideally vocab should be pickled, but rebuilding is okay for this demo.
-        # Updated path to be absolute or relative to project root if needed
-        # Updated paths to be relative to BASE_DIR
-        dataset_dir = os.environ.get('DATASET_DIR', os.path.join(BASE_DIR, "7GB_IMAGE_TO_TEXT_DATASET"))
-        root_dir = os.path.join(dataset_dir, "train_val_images")
-        img_csv = os.path.join(dataset_dir, "img.csv")
-        annot_csv = os.path.join(dataset_dir, "annot.csv")
-        
         try:
-            if not os.path.exists(img_csv):
-                raise FileNotFoundError(f"Dataset CSV not found at {img_csv}")
-            dataset = TextOCRDataset(root_dir, img_csv, annot_csv)
-            VOCAB = dataset.vocab
+            print("Loading model and vocabulary...")
             
+            # Define transform
+            TRANSFORM = transforms.Compose(
+                [
+                    transforms.Resize((299, 299)),
+                    transforms.ToTensor(),
+                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                ]
+            )
+            
+            # Updated paths to be relative to BASE_DIR
+            dataset_dir = os.environ.get('DATASET_DIR', os.path.join(settings.BASE_DIR, "7GB_IMAGE_TO_TEXT_DATASET"))
+            root_dir = os.path.join(dataset_dir, "train_val_images")
+            img_csv = os.path.join(dataset_dir, "img.csv")
+            annot_csv = os.path.join(dataset_dir, "annot.csv")
+            
+            # Load dataset to get vocab
+            if os.path.exists(img_csv):
+                dataset = TextOCRDataset(root_dir, img_csv, annot_csv)
+                VOCAB = dataset.vocab
+            else:
+                print(f"Dataset CSV not found at {img_csv}, using mock vocab.")
+                raise FileNotFoundError("Dataset CSV not found")
+
             # Load model
-            # Check if checkpoint exists, else init random model
-            # Checkpoint path relative to manage.py execution (root)
-            checkpoint_path = "models/my_checkpoint.pth.tar" 
+            checkpoint_path = os.path.join(settings.BASE_DIR, "models/my_checkpoint.pth.tar")
             if not os.path.exists(checkpoint_path):
                 print(f"Checkpoint not found at {checkpoint_path}, using random model.")
-                checkpoint_path = None # Will init random model
+                checkpoint_path = None
                 
             MODEL, DEVICE = get_inference_model(
                 vocab_size=len(VOCAB),
                 checkpoint_path=checkpoint_path
             )
-            print("Model loaded.")
+            print("Model resources successfully loaded.")
+            
         except Exception as e:
             print(f"Error loading resources: {e}")
-            # Fallback for empty vocab if dataset not found, to allow UI testing
-            class MockVocab:
-                def __len__(self): return 100
-                itos = {0: "<PAD>", 1: "<SOS>", 2: "<EOS>", 3: "<UNK>"}
-            VOCAB = MockVocab()
-            MODEL, DEVICE = get_inference_model(vocab_size=100, checkpoint_path=None)
+            # Robust Fallback for demo/UI testing
+            if VOCAB is None:
+                class MockVocab:
+                    def __len__(self): return 100
+                    def __getitem__(self, idx): return itos.get(idx, "<UNK>")
+                    itos = {0: "<PAD>", 1: "<SOS>", 2: "<EOS>", 3: "<UNK>"}
+                    def __call__(self, text): return [1, 2] # Dummy
+                VOCAB = MockVocab()
+            
+            if MODEL is None:
+                MODEL, DEVICE = get_inference_model(vocab_size=100, checkpoint_path=None)
+            
+            if TRANSFORM is None:
+                TRANSFORM = transforms.Compose([transforms.Resize((299, 299)), transforms.ToTensor()])
+            print("Falling back to random model for UI demonstration.")
 
 def index(request):
     return render(request, 'index.html')
