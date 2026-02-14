@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Captioning | Neural Text Extraction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container glass-panel">
+        <header>
+            <h1>Neural <span class="gradient-text">Text</span> Extractor</h1>
+            <p>Upload an image to extract text sequences using Deep Learning</p>
+        </header>
+
+        <main>
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="fileInput" accept="image/*" hidden>
+                <div class="upload-content" id="uploadContent">
+                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                        </path>
+                    </svg>
+                    <p>Drag & Drop your image here</p>
+                    <button class="btn-primary" onclick="document.getElementById('fileInput').click()">Browse
+                        Files</button>
+                </div>
+                <div class="preview-container hidden" id="previewContainer">
+                    <img id="imagePreview" src="" alt="Preview">
+                    <button class="btn-icon remove-btn" id="removeBtn">&times;</button>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-generate" id="generateBtn" disabled>
+                    <span class="btn-text">Generate Caption</span>
+                    <span class="loader hidden"></span>
+                </button>
+            </div>
+
+            <div class="result-section hidden" id="resultSection">
+                <h2>Generated Caption</h2>
+                <div class="caption-box">
+                    <p id="captionText"></p>
+                    <span class="cursor">|</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by CNN-RNN Architecture &bull; TextOCR Dataset</p>
+        </footer>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>
