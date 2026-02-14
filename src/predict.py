@@ -2,8 +2,8 @@
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
-from model import CNNtoRNN
-from dataset import get_loader
+from .model import CNNtoRNN
+from .dataset import get_loader
 
 def load_checkpoint(checkpoint, model, optimizer=None):
     model.load_state_dict(checkpoint["state_dict"])

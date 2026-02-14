@@ -34,12 +34,15 @@ def load_model_resources():
         # Load dataset to get vocab
         # Ideally vocab should be pickled, but rebuilding is okay for this demo.
         # Updated path to be absolute or relative to project root if needed
-        # We assume the user has the dataset at d:/7GB_IMAGE_TO_TEXT_DATASET as before
-        root_dir = "d:/7GB_IMAGE_TO_TEXT_DATASET/train_val_images"
-        img_csv = "d:/7GB_IMAGE_TO_TEXT_DATASET/img.csv"
-        annot_csv = "d:/7GB_IMAGE_TO_TEXT_DATASET/annot.csv"
+        # Updated paths to be relative to BASE_DIR
+        dataset_dir = os.environ.get('DATASET_DIR', os.path.join(BASE_DIR, "7GB_IMAGE_TO_TEXT_DATASET"))
+        root_dir = os.path.join(dataset_dir, "train_val_images")
+        img_csv = os.path.join(dataset_dir, "img.csv")
+        annot_csv = os.path.join(dataset_dir, "annot.csv")
         
         try:
+            if not os.path.exists(img_csv):
+                raise FileNotFoundError(f"Dataset CSV not found at {img_csv}")
             dataset = TextOCRDataset(root_dir, img_csv, annot_csv)
             VOCAB = dataset.vocab
             
