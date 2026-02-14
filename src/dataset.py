@@ -90,13 +90,29 @@ class CollateFn:
         self.pad_idx = pad_idx
 
     def __call__(self, batch):
-        imgs = [item[0].unsqueeze(0) for item in batch]
-        imgs = torch.cat(imgs, dim=0)
-        
-        targets = [item[1] for item in batch]
-        targets = torch.nn.utils.rnn.pad_sequence(targets, batch_first=True, padding_value=self.pad_idx)
+        try:
+            # Diagnostic: Print shapes if there's an issue
+            for i, item in enumerate(batch):
+                if not isinstance(item[0], torch.Tensor):
+                    print(f"ERROR: Item {i} image is not a tensor! Type: {type(item[0])}")
+            
+            imgs = [item[0].unsqueeze(0) for item in batch]
+            
+            # Check for shape consistency
+            first_shape = imgs[0].shape
+            for i, img in enumerate(imgs):
+                if img.shape != first_shape:
+                    print(f"SHAPE MISMATCH: Item {i} has shape {img.shape}, expected {first_shape}")
 
-        return imgs, targets
+            imgs = torch.cat(imgs, dim=0)
+            
+            targets = [item[1] for item in batch]
+            targets = torch.nn.utils.rnn.pad_sequence(targets, batch_first=True, padding_value=self.pad_idx)
+
+            return imgs, targets
+        except Exception as e:
+            print(f"CollateFn Error: {e}")
+            raise e
 
 def get_loader(
     root_dir,

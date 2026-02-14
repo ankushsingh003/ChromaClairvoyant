@@ -1,0 +1,15 @@
+>>> src/train.py module loaded successfully.
+>>> Initializing Training Process...
+Loading dataset from d:/7GB_IMAGE_TO_TEXT_DATASET...
+Dataset loaded. Vocab size: 14798. Batches: 5445
+Using device: cpu
+Starting Dry Run...
+Batch 1 processed. Loss: 9.6305
+Batch 2 processed. Loss: 9.6136
+Batch 3 processed. Loss: 9.5589
+Batch 4 processed. Loss: 9.4238
+Batch 5 processed. Loss: 9.3550
+
+[DRY RUN] Processed 5 batches. Proceeding to save.
+Saving checkpoint to models/my_checkpoint_epoch_0.pth.tar...
+Successfully saved checkpoints.
