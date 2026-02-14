@@ -191,6 +191,86 @@ The model is designed to work with the **TextOCR dataset** or similar image-to-t
 
 ---
 
+## 🚀 Deployment
+
+### Deploy to Render (Recommended)
+
+Render is the recommended platform for deploying ChromaClairvoyant due to better support for Django applications with ML models.
+
+**Steps:**
+
+1. **Push your code to GitHub** (already done!)
+
+2. **Create a new Web Service on Render**
+   - Go to [Render Dashboard](https://dashboard.render.com/)
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository
+
+3. **Configure the service**
+   - **Name**: chromaclairvoyant
+   - **Environment**: Python 3
+   - **Build Command**: `./build.sh`
+   - **Start Command**: `gunicorn web_project.wsgi:application`
+
+4. **Set Environment Variables**
+   - `SECRET_KEY`: Generate a secure key
+   - `DEBUG`: `False`
+   - `ALLOWED_HOSTS`: `.onrender.com`
+   - `PYTHON_VERSION`: `3.11.0`
+
+5. **Deploy!** Render will automatically build and deploy your app.
+
+**Access your app**: `https://chromaclairvoyant.onrender.com`
+
+### Deploy to Vercel (Limited Support)
+
+> [!WARNING]
+> **Vercel has limitations** for this project:
+> - 50MB deployment size limit
+> - 10-second execution timeout
+> - Not ideal for ML models (~100MB PyTorch weights)
+> 
+> **Use Render instead for best results.**
+
+If you still want to try Vercel:
+
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run: `vercel`
+3. Follow the prompts
+
+### Environment Variables
+
+Create a `.env` file (use `.env.example` as template):
+
+```bash
+SECRET_KEY=your-super-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=.onrender.com,yourdomain.com
+```
+
+**Generate a secure SECRET_KEY:**
+```python
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+### Troubleshooting Deployment
+
+**Issue: "Application failed to start"**
+- Check logs for errors
+- Ensure all dependencies are in `requirements.txt`
+- Verify `build.sh` has execute permissions
+
+**Issue: "Static files not loading"**
+- Run `python manage.py collectstatic`
+- Check `STATIC_ROOT` and `STATICFILES_STORAGE` settings
+
+**Issue: "Model too large"**
+- Consider model quantization
+- Use external storage (S3, Google Cloud Storage)
+- Load models on-demand instead of at startup
+
+---
+
 ## 🛠️ Technologies Used
 
 - **Backend**: Django 4.0+
